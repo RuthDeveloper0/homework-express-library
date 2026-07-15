@@ -30,4 +30,27 @@ const books = [
     }
 ];
 
-module.exports = { books };
+
+const users = [
+    {
+        id: 101,
+        username: "יוסי כהן",
+        email: "yossi@example.com",
+        password: "password123",
+        borrowedBooks: [2] 
+    },
+    {
+        id: 102,
+        username: "משה לוי",
+        email: "moshe@example.com",
+        password: "securePass456",
+        borrowedBooks: [] 
+    }
+];
+
+
+module.exports = {
+    books,
+    users
+};
+
