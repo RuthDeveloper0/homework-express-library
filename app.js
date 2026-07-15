@@ -11,10 +11,6 @@ app.get('/', (req, res) => {
 });
 
 
-app.get('/books', (req, res) => {
-    res.json(books);
-});
-
 app.get('/books/:id', (req, res) => {
 
     const book = books.find(b => b.id == req.params.id);
@@ -99,6 +95,28 @@ app.post('/books/return/:id', (req, res) => {
     book.isBorrowed = false;
 
     res.json({ message: "הספר הוחזר בהצלחה ", book });
+});
+
+
+app.get('/books', (req, res) => {
+
+    const { title } = req.query;
+    const page = parseInt(req.query.page) || 1;      
+    const limit = parseInt(req.query.limit) || 10;  
+
+    let filteredBooks = books;
+    if (title) {
+        filteredBooks = books.filter(b => 
+            b.title.toLowerCase().includes(title.toLowerCase())
+        );
+    }
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
+
+    res.json(paginatedBooks);
 });
 
 
