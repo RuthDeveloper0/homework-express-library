@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+    <button onclick="test()">בדוק CORS</button>
+    <p id="res">המתן ללחיצה...</p>
+
+    <script>
+        async function test() {
+            try {
+                const response = await fetch('http://localhost:5001/');
+                const data = await response.text();
+                document.getElementById('res').innerText = data;
+            } catch (err) {
+                document.getElementById('res').innerText = 'שגיאה: ' + err.message;
+            }
+        }
+    </script>
+
+</body>
+</html>
