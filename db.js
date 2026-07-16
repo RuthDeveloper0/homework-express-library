@@ -49,8 +49,5 @@ const users = [
 ];
 
 
-module.exports = {
-    books,
-    users
-};
+export { books, users };
 
