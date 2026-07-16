@@ -1,10 +1,12 @@
 import express from 'express';
-import userController from '../controllers/user.controller.js';
+import { signUpController, signInController } from '../controllers/user.controller.js'; 
+import { validateBody } from '../middlewares/validator.middleware.js';
+import { signUpSchema, signInSchema } from '../validators/user.validator.js';
 
 const router = express.Router();
 
-router.get('/', userController.getAllUsers);
-router.post('/signup', userController.signUpUser);
-router.post('/signin', userController.signInUser);
+
+router.post('/signup', validateBody(signUpSchema), signUpController);
+router.post('/signin', validateBody(signInSchema), signInController);
 
 export default router;
