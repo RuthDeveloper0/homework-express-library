@@ -1,10 +1,10 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import bookRouter from './book.route.js';
+import userRouter from './user.route.js'; 
 
-const bookRouter = require('./book.route.js');
-const userRouter = require('./user.route.js');
+const router = express.Router();
 
 router.use('/books', bookRouter);
 router.use('/users', userRouter);
 
-module.exports = router;
+export default router;

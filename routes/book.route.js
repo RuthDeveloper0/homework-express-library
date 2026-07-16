@@ -1,9 +1,7 @@
-const express = require('express');
+import express from 'express';
+import bookController from '../controllers/book.controller.js';
+
 const router = express.Router();
-
-
-const bookController = require('../controllers/book.controller.js');
-
 
 router.get('/', bookController.getAllBooks);
 router.get('/:id', bookController.getBookById);
@@ -12,4 +10,4 @@ router.put('/:id', bookController.updateBook);
 router.post('/borrow/:id', bookController.borrowBook);
 router.post('/return/:id', bookController.returnBook);
 
-module.exports = router;
+export default router;

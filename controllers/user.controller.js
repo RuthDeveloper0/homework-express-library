@@ -1,5 +1,4 @@
-const { users } = require('../db.js');
-
+import { users } from '../db.js';
 
 const getAllUsers = (req, res) => {
     res.json(users);
@@ -25,7 +24,6 @@ const signUpUser = (req, res) => {
     res.status(201).json({ message: "המשתמש נרשם בהצלחה", user: newUser });
 };
 
-
 const signInUser = (req, res) => {
     const { email, password } = req.body;
     
@@ -38,7 +36,7 @@ const signInUser = (req, res) => {
     res.json({ message: "התחברות הצליחה", username: user.username });
 };
 
-module.exports = {
+export default {
     getAllUsers,
     signUpUser,
     signInUser

@@ -1,5 +1,4 @@
-const { books, users } = require('../db.js');
-
+import { books, users } from '../db.js';
 
 const getAllBooks = (req, res) => {
     const { title } = req.query;
@@ -20,7 +19,6 @@ const getAllBooks = (req, res) => {
     res.json(paginatedBooks);
 };
 
-
 const getBookById = (req, res) => {
     const book = books.find(b => b.id == req.params.id);
     if (book) {
@@ -29,7 +27,6 @@ const getBookById = (req, res) => {
         res.status(404).send('not found the book');
     }
 };
-
 
 const createBook = (req, res) => {
     const newBook = req.body; 
@@ -52,7 +49,6 @@ const updateBook = (req, res) => {
     res.json({ message: "הספר עודכן בהצלחה", book });
 };
 
-
 const borrowBook = (req, res) => {
     const bookId = parseInt(req.params.id);
     const { customerId } = req.body; 
@@ -74,7 +70,6 @@ const borrowBook = (req, res) => {
     res.json({ message: "הספר הושאל בהצלחה ועודכן אצל המשתמש", book, user });
 };
 
-
 const returnBook = (req, res) => {
     const bookId = parseInt(req.params.id);
 
@@ -94,8 +89,7 @@ const returnBook = (req, res) => {
     res.json({ message: "הספר הוחזר בהצלחה ועודכן אצל המשתמש", book });
 };
 
-
-module.exports = {
+export default {
     getAllBooks,
     getBookById,
     createBook,
