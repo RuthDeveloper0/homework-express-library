@@ -30,3 +30,25 @@ export const checkLibraryHours = (req, res, next) => {
 
     next();
 };
+
+
+export const notFoundHandler = (req, res, next) => {
+    const error = new Error(`נתיב לא נמצא - ${req.originalUrl}`);
+    res.status(404);
+    next(error); 
+};
+
+
+export const errorHandler = (err, req, res, next) => {
+  
+    const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+    
+    res.status(statusCode).json({
+        error: {
+            message: err.message,
+            type: statusCode === 404 ? 'not found' : 'server error',
+
+            stack: process.env.NODE_ENV === 'production' ? null : err.stack
+        }
+    });
+};
