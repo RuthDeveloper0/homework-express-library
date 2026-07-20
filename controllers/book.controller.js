@@ -1,6 +1,5 @@
 import Book from '../models/book.model.js';
 
-// קבלת כל הספרים
 export const getAllBooks = async (req, res, next) => {
     try {
         const books = await Book.find();
@@ -10,7 +9,6 @@ export const getAllBooks = async (req, res, next) => {
     }
 };
 
-// קבלת ספר לפי קוד (ID)
 export const getBookById = async (req, res, next) => {
     try {
         const book = await Book.findById(req.params.id);
@@ -24,7 +22,6 @@ export const getBookById = async (req, res, next) => {
     }
 };
 
-// הוספת ספר חדש - ודאי ששם הפונקציה תואם בדיוק לייבוא בראוטר!
 export const createBook = async (req, res, next) => {
     try {
         const newBook = await Book.create(req.body);
@@ -34,7 +31,6 @@ export const createBook = async (req, res, next) => {
     }
 };
 
-// עדכון ספר
 export const updateBook = async (req, res, next) => {
     try {
         const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
@@ -48,7 +44,6 @@ export const updateBook = async (req, res, next) => {
     }
 };
 
-// מחיקת ספר
 export const deleteBook = async (req, res, next) => {
     try {
         const deletedBook = await Book.findByIdAndDelete(req.params.id);
@@ -62,7 +57,6 @@ export const deleteBook = async (req, res, next) => {
     }
 };
 
-// קבלת ספרים לפי קטגוריה (סעיף 29)
 export const getBooksByCategory = async (req, res, next) => {
     try {
         const { categoryName } = req.params;
