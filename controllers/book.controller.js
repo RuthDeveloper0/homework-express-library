@@ -1,127 +1,75 @@
 import Book from '../models/book.model.js';
 
-export const getAllBooks = async (req, res) => {
+// קבלת כל הספרים
+export const getAllBooks = async (req, res, next) => {
     try {
-        const { title } = req.query;
-        const page = parseInt(req.query.page) || 1;      
-        const limit = parseInt(req.query.limit) || 10;  
-        const startIndex = (page - 1) * limit;
-
-
-        let queryFilter = {};
-        if (title) {
-            queryFilter.title = { $regex: title, $options: 'i' }; 
-        }
-
-        const filteredBooks = await Book.find(queryFilter)
-                                        .skip(startIndex)
-                                        .limit(limit);
-
-        res.json(filteredBooks);
+        const books = await Book.find();
+        res.status(200).json(books);
     } catch (error) {
-        res.status(500).json({ message: "שגיאה בקבלת הספרים", error: error.message });
+        next(error);
     }
 };
 
-export const getBookById = async (req, res) => {
+// קבלת ספר לפי קוד (ID)
+export const getBookById = async (req, res, next) => {
     try {
         const book = await Book.findById(req.params.id);
-        if (book) {
-            res.json(book); 
-        } else {
-            res.status(404).send('not found the book');
+        if (!book) {
+            res.status(404);
+            throw new Error('ספר לא נמצא');
         }
+        res.status(200).json(book);
     } catch (error) {
-        res.status(400).json({ message: "מזהה ספר לא תקין", error: error.message });
+        next(error);
     }
 };
 
-
-export const createBook = async (req, res) => {
+// הוספת ספר חדש
+export const createBook = async (req, res, next) => {
     try {
-        const newBook = new Book(req.body); 
-        await newBook.save();    
-        res.status(201).json(newBook); 
+        const newBook = await Book.create(req.body);
+        res.status(201).json(newBook);
     } catch (error) {
-        res.status(400).json({ message: "שגיאה ביצירת הספר", error: error.message });
+        next(error);
     }
 };
 
-
-export const updateBook = async (req, res) => {
+// עדכון ספר
+export const updateBook = async (req, res, next) => {
     try {
-        const bookId = req.params.id; 
-
-        const updatedBook = await Book.findByIdAndUpdate(
-            bookId, 
-            { $set: req.body }, 
-            { new: true, runValidators: true }
-        );
-
+        const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
         if (!updatedBook) {
-            return res.status(404).send('הספר לא נמצא');
+            res.status(404);
+            throw new Error('ספר לא נמצא לעדכון');
         }
-
-        res.json({ message: "הספר עודכן בהצלחה", book: updatedBook });
+        res.status(200).json(updatedBook);
     } catch (error) {
-        res.status(400).json({ message: "שגיאה בעדכון הספר", error: error.message });
+        next(error);
     }
 };
 
-
-export const deleteBook = async (req, res) => {
+// מחיקת ספר
+export const deleteBook = async (req, res, next) => {
     try {
-        const bookId = req.params.id;
-        const deletedBook = await Book.findByIdAndDelete(bookId);
-
+        const deletedBook = await Book.findByIdAndDelete(req.params.id);
         if (!deletedBook) {
-            return res.status(404).send('הספר לא נמצא ומחיקתו נכשלה');
+            res.status(404);
+            throw new Error('ספר לא נמצא למחיקה');
         }
-
-        res.json({ message: "הספר נמחק בהצלחה", book: deletedBook });
+        res.status(200).json({ message: 'הספר נמחק בהצלחה' });
     } catch (error) {
-        res.status(400).json({ message: "שגיאה במחיקת הספר", error: error.message });
+        next(error);
     }
 };
 
-
-export const borrowBook = async (req, res) => {
+// קבלת ספרים לפי קטגוריה (התוספת של סעיף 29)
+export const getBooksByCategory = async (req, res, next) => {
     try {
-        const bookId = req.params.id;
-        const { customerId } = req.body; 
-
-        const book = await Book.findById(bookId);
-        if (!book) return res.status(404).send('הספר לא נמצא');
-        if (book.isBorrowed) return res.status(400).send('הספר כבר מושאל');
-
-
-        book.isBorrowed = true;
-        book.borrowHistory.push({
-            borrowDate: new Date().toISOString().split('T')[0], 
-            customerId: customerId
-        });
-
-        await book.save();
-        res.json({ message: "הספר הושאל בהצלחה", book });
+        const { categoryName } = req.params;
+        // חיפוש ספרים שהמערך categories שלהם מכיל את הקטגוריה המבוקשת
+        const books = await Book.find({ categories: categoryName });
+        res.status(200).json(books);
     } catch (error) {
-        res.status(400).json({ message: "שגיאה בתהליך השאלת הספר", error: error.message });
-    }
-};
-
-
-export const returnBook = async (req, res) => {
-    try {
-        const bookId = req.params.id;
-
-        const book = await Book.findById(bookId);
-        if (!book) return res.status(404).send('הספר לא נמצא');
-        if (!book.isBorrowed) return res.status(400).send('הספר אינו במצב מושאל');
-
-        book.isBorrowed = false;
-        await book.save();
-
-        res.json({ message: "הספר הוחזר בהצלחה", book });
-    } catch (error) {
-        res.status(400).json({ message: "שגיאה בתהליך החזרת הספר", error: error.message });
+        next(error);
     }
 };

@@ -1,54 +1,59 @@
 import User from '../models/user.model.js';
 
 
-export const getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res, next) => {
     try {
-        const users = await User.find().populate('borrowedBooks'); 
-        res.json(users);
+        const users = await User.find();
+        res.status(200).json(users);
     } catch (error) {
-        res.status(500).json({ message: "שגיאה בקבלת המשתמשים", error: error.message });
+        next(error);
     }
 };
 
 
-export const signUpController = async (req, res) => {
+export const signUp = async (req, res, next) => {
     try {
-        const { username, email, password } = req.body;
-
+        const { username, phone, email, password } = req.body;
         const userExists = await User.findOne({ email });
         if (userExists) {
-            return res.status(400).send('משתמש עם אימייל זה כבר קיים במערכת');
+            res.status(400);
+            throw new Error('משתמש עם אימייל זה כבר קיים במערכת');
         }
 
-      
-        const newUser = new User({
+        const newUser = await User.create({
             username,
+            phone,
             email,
-            password,
-            borrowedBooks: []
+            password 
         });
 
-        await newUser.save();
-        res.status(201).json({ message: "המשתמש נרשם בהצלחה", user: newUser });
+        res.status(201).json(newUser);
     } catch (error) {
-        res.status(400).json({ message: "שגיאה בתהליך ההרשמה", error: error.message });
+        next(error);
     }
 };
 
 
-export const signInController = async (req, res) => {
+export const signIn = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const { email, password } = req.body;  
+        const user = await User.findOne({ email });
         
-
-        const user = await User.findOne({ email, password });
-        
-        if (!user) {
-            return res.status(401).send('אימייל או סיסמה שגויים');
+ 
+        if (!user || user.password !== password) {
+            res.status(401);
+            throw new Error('אימייל או סיסמה שגויים');
         }
 
-        res.json({ message: "התחברות הצליחה", username: user.username });
+        res.status(200).json({
+            message: 'התחברות בוצעה בהצלחה',
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
     } catch (error) {
-        res.status(500).json({ message: "שגיאה בתהליך ההתחברות", error: error.message });
+        next(error);
     }
 };
