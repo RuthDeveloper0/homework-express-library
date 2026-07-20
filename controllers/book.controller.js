@@ -24,7 +24,7 @@ export const getBookById = async (req, res, next) => {
     }
 };
 
-// הוספת ספר חדש
+// הוספת ספר חדש - ודאי ששם הפונקציה תואם בדיוק לייבוא בראוטר!
 export const createBook = async (req, res, next) => {
     try {
         const newBook = await Book.create(req.body);
@@ -62,11 +62,10 @@ export const deleteBook = async (req, res, next) => {
     }
 };
 
-// קבלת ספרים לפי קטגוריה (התוספת של סעיף 29)
+// קבלת ספרים לפי קטגוריה (סעיף 29)
 export const getBooksByCategory = async (req, res, next) => {
     try {
         const { categoryName } = req.params;
-        // חיפוש ספרים שהמערך categories שלהם מכיל את הקטגוריה המבוקשת
         const books = await Book.find({ categories: categoryName });
         res.status(200).json(books);
     } catch (error) {
